@@ -94,6 +94,35 @@ app.delete("/users/:id", async (request, response) => {
     }
 })
 
+app.get("/conhecimentos", async (request, response) => {
+
+  const { categoria, nivel, busca } = request.query;
+
+  try {
+    const conhecimentos = await prisma.post.findMany({
+      where: {
+        
+        categoria: categoria ? String(categoria) : undefined,
+        
+        nivel: nivel ? String(nivel) : undefined,
+
+        OR: busca ? [
+          { titulo: { contains: String(busca) } },
+          { descricao: { contains: String(busca) } }
+        ] : undefined
+      },
+      include: {
+        userPost: true 
+      }
+    });
+
+    return response.json(conhecimentos); 
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error: "Erro ao filtrar conhecimentos" });
+  }
+});
+
 app.listen(8080, () => {
     console.log("Running on port 8080")
 })

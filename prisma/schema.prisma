@@ -20,6 +20,8 @@ model Post {
   id        String   @id @default(uuid())
   title     String   @db.VarChar(100)
   content   String   @unique
+  categoria String
+  nivel     String
   userId    String
   userPost  User      @relation(fields: [userId], references: [id])
 
