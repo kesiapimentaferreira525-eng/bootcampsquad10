@@ -94,7 +94,7 @@ app.delete("/users/:id", async (req, res) => {
   }
 });
 
-// A porta que o trabalho pede (pode ser 3000 ou 8080, verifique qual prefere)
+// A porta que o trabalho pede (pode ser 3000 ou 8080,  qual prefere?)
 app.listen(3000, () => {
     console.log("Servidor rodando na porta 3000");
 });
