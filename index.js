@@ -94,6 +94,52 @@ app.delete("/users/:id", async (request, response) => {
     }
 })
 
+app.post("/conhecimentos", async (request, response) => {
+    const { title, content, categoria, nivel, userId } = request.body;
+
+    try{
+
+        const ofertas = await prisma.post.create({
+            data: { title, content, categoria, nivel, userId }
+        })
+        return response.status(200).json("Oferta cadastrada com sucesso.")
+
+    } catch (error){
+        return response.status(500).send()
+    }
+
+})
+
+app.put("/conhecimentos/:id", async (request, response) => {
+    const { title, content, categoria, nivel, userId } = request.body;
+    const { id } = request.params;
+
+    const oferta = await prisma.post.findUnique({ where: { id }})
+
+    if(!oferta){
+        return response.status(404).json("Oferta não encontrada.")
+    }
+
+    const ofertaAtualizada = await prisma.post.update({
+        data: { title, content, categoria, nivel, userId },
+        where: { id }
+    })
+    return response.status(200).json(ofertaAtualizada)
+})
+
+app.delete("/conhecimentos/:id", async (request, response) => {
+    const { id } = request.params;
+
+    const oferta = await prisma.post.findUnique({where: { id }})
+
+    if (!oferta){
+        return response.status(404).json("Post não encontrado.")
+    }
+
+    const ofertaDeleted = await prisma.post.delete({where: { id }})
+    return response.status(204).send()
+})
+
 app.get("/conhecimentos", async (request, response) => {
 
   const { categoria, nivel, busca } = request.query;
