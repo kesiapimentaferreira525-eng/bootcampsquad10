@@ -7,23 +7,24 @@ datasource db {
 }
 
 model User {
-  id     String   @id @default(uuid())
-  name   String   @db.VarChar(100)
-  email  String   @unique
-  phone  String
-  posts  Post[]
+  id                String    @id @default(uuid())
+  name              String    @db.VarChar(100)
+  email             String    @unique
+  phone             String
+  description       String    @default("USER")
+  offers  Offer[]
 
   @@map("users")
 }
 
-model Post {
-  id        String   @id @default(uuid())
-  title     String   @db.VarChar(100)
-  content   String   
-  categoria String
-  nivel     String
-  userId    String
-  userPost  User      @relation(fields: [userId], references: [id])
+model Offer {
+  id            String    @id @default(uuid())
+  title         String    @db.VarChar(100)
+  description   String   
+  category      String    @db.VarChar(100)
+  level         String    @db.VarChar(100)
+  userId        String    @db.VarChar(100)
+  user          User      @relation(fields: [userId], references: [id])
 
-  @@map("posts")
+  @@map("offers")
 }

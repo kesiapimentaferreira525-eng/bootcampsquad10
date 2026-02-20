@@ -95,14 +95,14 @@ app.delete("/users/:id", async (request, response) => {
 })
 
 app.post("/conhecimentos", async (request, response) => {
-    const { title, content, categoria, nivel, userId } = request.body;
+    const { title, description, category, level, userId } = request.body;
 
     try{
 
-        const ofertas = await prisma.post.create({
-            data: { title, content, categoria, nivel, userId }
+        const ofertas = await prisma.offer.create({
+            data: { title, description, category, level, userId }
         })
-        return response.status(200).json("Oferta cadastrada com sucesso.")
+        return response.status(201).json("Oferta cadastrada com sucesso.")
 
     } catch (error){
         return response.status(500).send()
@@ -111,34 +111,47 @@ app.post("/conhecimentos", async (request, response) => {
 })
 
 app.put("/conhecimentos/:id", async (request, response) => {
-    const { title, content, categoria, nivel, userId } = request.body;
+    const { title, description, category, level, userId } = request.body;
     const { id } = request.params;
 
-    const oferta = await prisma.post.findUnique({ where: { id }})
+    try{
+        const oferta = await prisma.offer.findUnique({ where: { id }})
 
-    if(!oferta){
-        return response.status(404).json("Oferta não encontrada.")
+        if(!oferta){
+            return response.status(404).json("Oferta não encontrada.")
+        }
+
+        const ofertaAtualizada = await prisma.offer.update({
+            data: { title, description, category, level, userId },
+            where: { id }
+        })
+        return response.status(200).json(ofertaAtualizada)
+
+    } catch(error){
+        return response.status(500).send()
     }
-
-    const ofertaAtualizada = await prisma.post.update({
-        data: { title, content, categoria, nivel, userId },
-        where: { id }
-    })
-    return response.status(200).json(ofertaAtualizada)
+        
 })
 
 app.delete("/conhecimentos/:id", async (request, response) => {
     const { id } = request.params;
 
-    const oferta = await prisma.post.findUnique({where: { id }})
+    try{
+        const oferta = await prisma.offer.findUnique({where: { id }})
 
-    if (!oferta){
-        return response.status(404).json("Post não encontrado.")
+        if (!oferta){
+            return response.status(404).json("Oferta não encontrada.")
+        }
+
+        const ofertaDeleted = await prisma.offer.delete({where: { id }})
+        return response.status(204).send()
+
+    } catch(error){
+        return response.status(500).send()
     }
-
-    const ofertaDeleted = await prisma.post.delete({where: { id }})
-    return response.status(204).send()
+        
 })
+
 
 app.get("/conhecimentos", async (request, response) => {
 
@@ -168,6 +181,7 @@ app.get("/conhecimentos", async (request, response) => {
     return response.status(500).json({ error: "Erro ao filtrar conhecimentos" });
   }
 });
+
 
 app.listen(8080, () => {
     console.log("Running on port 8080")
