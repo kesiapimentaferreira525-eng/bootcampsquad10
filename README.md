@@ -1,14 +1,10 @@
-# Projeto do Curso DFS-2026.1
+# Projeto de Demonstração - Node.js com Prisma ORM
 
-Este é um projeto de backend desenvolvido em Node.js/Express com Prisma ORM e Postgres 15, para gerenciar ofertas de conhecimentos.
+Este é um projeto de demonstração usando Node.js com Prisma ORM aula de DFS 2026.1
 
 ## Como rodar o projeto
 
-1. Clone o repositório no GitHub:
-
-```bash
-git clone https://github.com/kesiapimentaferreira525-eng/bootcampsquad10
-```
+1. Clone o repositório.
 
 2. Instale as dependências:
 
@@ -16,10 +12,10 @@ git clone https://github.com/kesiapimentaferreira525-eng/bootcampsquad10
 npm install
 ```
 
-3. Crie um arquivo .env na raiz do projeto com a variável DATABASE_URL apontando para o banco de dados:
+3. Crie um arquivo `.env` na raiz do projeto com a variável `DATABASE_URL` apontando para seu banco de dados:
 
 ```env
-DATABASE_URL="postgresql://postgres:root@localhost:5433/db_dados?schema=public"
+DATABASE_URL="sua_string_de_conexao"
 ```
 
 4. Execute as migrations:
@@ -28,13 +24,7 @@ DATABASE_URL="postgresql://postgres:root@localhost:5433/db_dados?schema=public"
 npx prisma migrate dev
 ```
 
-5. Visualizar as tabelas:
-
-```bash
-npx prisma studio
-```
-
-6. Inicie o projeto:
+5. Inicie o projeto:
 
 ```bash
 npm start
