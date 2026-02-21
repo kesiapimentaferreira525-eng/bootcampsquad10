@@ -1,54 +1,67 @@
+import "dotenv/config";
 import express from "express";
 import prisma from "./PrismaClient.js";
 
 const app = express();
 app.use(express.json());
 
-// 1. Rota para cadastrar um novo usuário (POST)
+/* ============================
+Criar usuário (POST)
+============================ */
 app.post("/users", async (req, res) => {
-    const { name, email, phone, description } = req.body; 
+  const { name, email, phone, description } = req.body;
 
-    try {
-        const newUser = await prisma.user.create({
-            data: { name, email, phone, description }
-        });
-        return res.status(201).json({
-            message: "Usuario cadastrado com sucesso!",
-            data: newUser
-        });
-    } catch (error) {
-        // Erro 400 se o email já existir, por exemplo
-        return res.status(400).json({ error: "Erro ao cadastrar usuário." });
-    }
+  try {
+    const newUser = await prisma.user.create({
+      data: { name, email, phone, description }
+    });
+
+    return res.status(201).json({
+      message: "Usuário cadastrado com sucesso!",
+      data: newUser
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({ error: "Erro ao cadastrar usuário." });
+  }
 });
 
-// 2. Rota para buscar todos os usuários (GET)
+
+/* ============================
+Listar usuários (GET)
+============================ */
 app.get("/users", async (req, res) => {
-    try {
-        const list = await prisma.user.findMany({
-            select: { 
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-                description: true
-            }
-        });
-        return res.status(200).json(list);
-    } catch (error) {
-        return res.status(500).json({ error: "Error fetching user list." });
-    }
+  try {
+    const list = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        description: true
+      }
+    });
+
+    return res.status(200).json(list);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao buscar usuários." });
+  }
 });
 
-// 3. Rota para editar informações (PUT)
+
+/* ============================
+Atualizar usuário (PUT)
+============================ */
 app.put("/users/:id", async (req, res) => {
   const { id } = req.params;
   const { name, email, phone, description } = req.body;
 
   try {
-    // Como no seu schema o ID é String (uuid), não usamos Number(id) aqui
     const userExists = await prisma.user.findUnique({
-      where: { id: id }
+      where: { id }
     });
 
     if (!userExists) {
@@ -56,7 +69,7 @@ app.put("/users/:id", async (req, res) => {
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: id },
+      where: { id },
       data: { name, email, phone, description }
     });
 
@@ -66,130 +79,151 @@ app.put("/users/:id", async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(500).json({ error: "Erro ao atualizar dados do usuário." });
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao atualizar usuário." });
   }
 });
 
-// 4. Rota para remover um usuário (DELETE)
+
+/* ============================
+Deletar usuário (DELETE)
+============================ */
 app.delete("/users/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
     const userToRemove = await prisma.user.findUnique({
-      where: { id: id }
+      where: { id }
     });
 
     if (!userToRemove) {
       return res.status(404).json({ message: "Usuário não encontrado para exclusão." });
     }
 
-        await prisma.user.delete({ 
-            where: { id }
-        })
+    await prisma.user.delete({
+      where: { id }
+    });
 
-        return response.status(204).send();
-    } catch(error) {
-        return response.status(500).send();
-    }
-})
+    return res.status(204).send();
 
-app.post("/conhecimentos", async (request, response) => {
-    const { title, description, category, level, userId } = request.body;
-
-    try{
-
-        const ofertas = await prisma.offer.create({
-            data: { title, description, category, level, userId }
-        })
-        return response.status(201).json("Oferta cadastrada com sucesso.")
-
-    } catch (error){
-        return response.status(500).send()
-    }
-
-})
-
-app.put("/conhecimentos/:id", async (request, response) => {
-    const { title, description, category, level, userId } = request.body;
-    const { id } = request.params;
-
-    try{
-        const oferta = await prisma.offer.findUnique({ where: { id }})
-
-        if(!oferta){
-            return response.status(404).json("Oferta não encontrada.")
-        }
-
-        const ofertaAtualizada = await prisma.offer.update({
-            data: { title, description, category, level, userId },
-            where: { id }
-        })
-        return response.status(200).json(ofertaAtualizada)
-
-    } catch(error){
-        return response.status(500).send()
-    }
-        
-})
-
-app.delete("/conhecimentos/:id", async (request, response) => {
-    const { id } = request.params;
-
-    try {
-        const oferta = await prisma.offer.findUnique({where: { id }});
-
-        if (!oferta){
-            return response.status(404).json("Oferta não encontrada.");
-        }
-        await prisma.offer.delete({ where: { id } }); 
-        return response.status(200).send();
-
-    } catch(error){
-        return response.status(500).send();
-    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao remover usuário." });
+  }
 });
-    
-app.get("/conhecimentos", async (request, response) => {
-  const { categoria, nivel, busca } = request.query;
+
+
+/* ============================
+Criar conhecimento (POST)
+============================ */
+app.post("/conhecimentos", async (req, res) => {
+  const { title, description, category, level, userId } = req.body;
 
   try {
-    const conhecimentos = await prisma.offer.findMany({ 
+    const oferta = await prisma.offer.create({
+      data: { title, description, category, level, userId }
+    });
+
+    return res.status(201).json({
+      message: "Oferta cadastrada com sucesso.",
+      data: oferta
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao cadastrar oferta." });
+  }
+});
+
+
+/* ============================
+Atualizar conhecimento (PUT)
+============================ */
+app.put("/conhecimentos/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, description, category, level, userId } = req.body;
+
+  try {
+    const oferta = await prisma.offer.findUnique({
+      where: { id }
+    });
+
+    if (!oferta) {
+      return res.status(404).json({ message: "Oferta não encontrada." });
+    }
+
+    const ofertaAtualizada = await prisma.offer.update({
+      where: { id },
+      data: { title, description, category, level, userId }
+    });
+
+    return res.status(200).json(ofertaAtualizada);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao atualizar oferta." });
+  }
+});
+
+
+/* ============================
+Deletar conhecimento (DELETE)
+============================ */
+app.delete("/conhecimentos/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const oferta = await prisma.offer.findUnique({
+      where: { id }
+    });
+
+    if (!oferta) {
+      return res.status(404).json({ message: "Oferta não encontrada." });
+    }
+
+    await prisma.offer.delete({
+      where: { id }
+    });
+
+    return res.status(204).send();
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao remover oferta." });
+  }
+});
+
+
+/* ============================
+Listar conhecimentos com filtros (GET)
+============================ */
+app.get("/conhecimentos", async (req, res) => {
+  const { categoria, nivel, busca } = req.query;
+
+  try {
+    const conhecimentos = await prisma.offer.findMany({
       where: {
         category: categoria ? String(categoria) : undefined,
         level: nivel ? String(nivel) : undefined,
         OR: busca ? [
-          { title: { contains: String(busca), mode: 'insensitive' } },
-          { description: { contains: String(busca), mode: 'insensitive' } } 
+          { title: { contains: String(busca), mode: "insensitive" } },
+          { description: { contains: String(busca), mode: "insensitive" } }
         ] : undefined
       },
       include: {
-        user: true 
+        user: true
       }
     });
 
-    return response.json(conhecimentos);
+    return res.status(200).json(conhecimentos);
+
   } catch (error) {
     console.error(error);
-    return response.status(500).json({ error: "Erro ao filtrar conhecimentos" });
+    return res.status(500).json({ error: "Erro ao filtrar conhecimentos." });
   }
 });
 
-app.listen(8080, () => {
-    console.log("Running on port 8080")
-})
 
-    await prisma.user.delete({
-      where: { id: id }
-    });
-
-    return res.status(200).json({ message: `Usuário ${userToRemove.name} removido com sucesso.` });
-
-  } catch (error) {
-    return res.status(500).json({ error: "Não foi possível remover o usuário." });
-  }
-});
-
-// A porta que o trabalho pede (pode ser 3000 ou 8080,  qual prefere?)
 app.listen(3000, () => {
-    console.log("Servidor rodando na porta 3000");
+  console.log("Servidor rodando na porta 3000");
 });
