@@ -83,6 +83,88 @@ app.delete("/users/:id", async (req, res) => {
       return res.status(404).json({ message: "Usuário não encontrado para exclusão." });
     }
 
+        await prisma.user.delete({ 
+            where: { id }
+        })
+
+        return response.status(204).send();
+    } catch(error) {
+        return response.status(500).send();
+    }
+})
+
+app.post("/conhecimentos", async (request, response) => {
+    const { title, description, category, level, userId } = request.body;
+
+    try{
+
+        const ofertas = await prisma.offer.create({
+            data: { title, description, category, level, userId }
+        })
+        return response.status(201).json("Oferta cadastrada com sucesso.")
+
+    } catch (error){
+        return response.status(500).send()
+    }
+
+})
+
+app.put("/conhecimentos/:id", async (request, response) => {
+    const { title, description, category, level, userId } = request.body;
+    const { id } = request.params;
+
+    try{
+        const oferta = await prisma.offer.findUnique({ where: { id }})
+
+        if(!oferta){
+            return response.status(404).json("Oferta não encontrada.")
+        }
+
+        const ofertaAtualizada = await prisma.offer.update({
+            data: { title, description, category, level, userId },
+            where: { id }
+        })
+        return response.status(200).json(ofertaAtualizada)
+
+    } catch(error){
+        return response.status(500).send()
+    }
+        
+})
+
+app.delete("/conhecimentos/:id", async (request, response) => {
+    const { id } = request.params;
+
+    try{
+        const oferta = await prisma.offer.findUnique({where: { id }})
+
+        if (!oferta){
+            return response.status(404).json("Oferta não encontrada.")
+        }
+
+        const ofertaDeleted = await prisma.offer.delete({where: { id }})
+        return response.status(204).send()
+
+    } catch(error){
+        return response.status(500).send()
+    }
+        
+})
+
+app.get("/conhecimentos", async (request, response) => {
+
+    const { title, description, category, level, userId } = request.query;
+    const offer = await prisma.offer.findMany({
+        include: {user: true}
+     });
+     return response.status(201).json(offer)
+
+})
+
+app.listen(8080, () => {
+    console.log("Running on port 8080")
+})
+
     await prisma.user.delete({
       where: { id: id }
     });
