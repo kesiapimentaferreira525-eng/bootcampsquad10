@@ -1,10 +1,34 @@
-# Projeto do Curso DFS-2026.1
+# 🚀 Projeto do Curso DFS-2026.1
 
-Este é um projeto de backend desenvolvido em Node.js/Express com Prisma ORM e Postgres 15, para gerenciar ofertas de conhecimentos.
+Este é um projeto de **backend** desenvolvido com **Node.js + Express + Prisma ORM + PostgreSQL 15**, com o objetivo de gerenciar **ofertas de conhecimentos**.
 
-## Como rodar o projeto
+---
 
-1. Clone o repositório no GitHub:
+## 📌 Tecnologias Utilizadas
+
+- **Node.js**
+- **Express**
+- **Prisma ORM**
+- **PostgreSQL 15**
+- **Nodemon**
+
+---
+
+## ⚙️ Pré-requisitos
+
+Antes de começar, você precisa ter instalado em sua máquina:
+
+- Node.js (versão LTS recomendada)
+- PostgreSQL 15
+- Git
+
+---
+
+## 📥 Instalação e Execução
+
+Siga os passos abaixo para rodar o projeto localmente:
+
+### 1️⃣ Clonar o repositório
 
 ```bash
 git clone https://github.com/kesiapimentaferreira525-eng/bootcampsquad10
@@ -39,3 +63,24 @@ npx prisma studio
 ```bash
 npm start
 ```
+
+📁 Estrutura básica do projeto
+
+📦 aula03-2026.1
+
+┣ 📂 prisma
+
+┣ 📂 node_modules
+
+┣ 📜 index.js
+
+┣ 📜 package.json
+
+┗ 📜 .env
+
+📜 Scripts disponíveis
+
+"scripts": {
+"test": "echo \"Error: no test specified\" && exit 1",
+"start": "nodemon --env-file=.env index.js"
+}
