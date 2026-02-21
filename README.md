@@ -67,6 +67,7 @@ npm start
 📁 Estrutura básica do projeto
 
 📦 aula03-2026.1
+
 ┣ 📂 prisma
 
 ┣ 📂 node_modules
