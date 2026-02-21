@@ -136,32 +136,45 @@ app.put("/conhecimentos/:id", async (request, response) => {
 app.delete("/conhecimentos/:id", async (request, response) => {
     const { id } = request.params;
 
-    try{
-        const oferta = await prisma.offer.findUnique({where: { id }})
+    try {
+        const oferta = await prisma.offer.findUnique({where: { id }});
 
         if (!oferta){
-            return response.status(404).json("Oferta não encontrada.")
+            return response.status(404).json("Oferta não encontrada.");
         }
-
-        const ofertaDeleted = await prisma.offer.delete({where: { id }})
-        return response.status(204).send()
+        await prisma.offer.delete({ where: { id } }); 
+        return response.status(200).send();
 
     } catch(error){
-        return response.status(500).send()
+        return response.status(500).send();
     }
-        
-})
-
+});
+    
 app.get("/conhecimentos", async (request, response) => {
+  const { categoria, nivel, busca } = request.query;
 
-    const { title, description, category, level, userId } = request.query;
-    const offer = await prisma.offer.findMany({
-        include: {user: true}
-     });
-     return response.status(201).json(offer)
+  try {
+    const conhecimentos = await prisma.offer.findMany({ 
+      where: {
+        category: categoria ? String(categoria) : undefined,
+        level: nivel ? String(nivel) : undefined,
+        OR: busca ? [
+          { title: { contains: String(busca), mode: 'insensitive' } },
+          { description: { contains: String(busca), mode: 'insensitive' } } 
+        ] : undefined
+      },
+      include: {
+        user: true 
+      }
+    });
 
-})
+    return response.json(conhecimentos);
+  } catch (error) {
+    console.error(error);
+    return response.status(500).json({ error: "Erro ao filtrar conhecimentos" });
+  }
+});
 
 app.listen(8080, () => {
     console.log("Running on port 8080")
-})
+});
