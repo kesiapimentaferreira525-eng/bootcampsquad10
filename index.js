@@ -116,7 +116,7 @@ app.delete("/users/:id", async (req, res) => {
 /* ============================
 Criar conhecimento (POST)
 ============================ */
-app.post("/conhecimentos", async (req, res) => {
+app.post("/offers", async (req, res) => {
   const { title, description, category, level, userId } = req.body;
 
   try {
@@ -139,7 +139,7 @@ app.post("/conhecimentos", async (req, res) => {
 /* ============================
 Atualizar conhecimento (PUT)
 ============================ */
-app.put("/conhecimentos/:id", async (req, res) => {
+app.put("/offers/:id", async (req, res) => {
   const { id } = req.params;
   const { title, description, category, level, userId } = req.body;
 
@@ -169,7 +169,7 @@ app.put("/conhecimentos/:id", async (req, res) => {
 /* ============================
 Deletar conhecimento (DELETE)
 ============================ */
-app.delete("/conhecimentos/:id", async (req, res) => {
+app.delete("/offers/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -197,7 +197,7 @@ app.delete("/conhecimentos/:id", async (req, res) => {
 /* ============================
 Listar conhecimentos com filtros (GET)
 ============================ */
-app.get("/conhecimentos", async (req, res) => {
+app.get("/offers", async (req, res) => {
   const { categoria, nivel, busca } = req.query;
 
   try {
