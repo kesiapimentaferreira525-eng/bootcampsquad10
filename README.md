@@ -68,9 +68,13 @@ npm start
 
 📦 aula03-2026.1
 ┣ 📂 prisma
+
 ┣ 📂 node_modules
+
 ┣ 📜 index.js
+
 ┣ 📜 package.json
+
 ┗ 📜 .env
 
 📜 Scripts disponíveis
