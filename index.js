@@ -2,10 +2,10 @@ import express, { request, response } from "express"
 import prisma from "./PrismaClient.js";
 
 
-import 'dotenv/config' // 1. Isso deve ser a PRIMEIRA LINHA do arquivo
+import 'dotenv/config' 
 import { createClient } from '@supabase/supabase-js'
 
-// 2. Agora o Node vai conseguir ler as variáveis do seu .env
+ //Agora o Node vai conseguir ler as variáveis do seu .env
 const supabase = createClient(
   process.env.SUPABASE_URL, 
   process.env.SUPABASE_ANON_KEY
@@ -14,13 +14,10 @@ const supabase = createClient(
 
 
 
-
-
-
-
-
 const app = express();
 app.use(express.json());
+
+
 
 app.get("/users", async (request, response) => {
     try {
@@ -135,7 +132,117 @@ app.delete("/users/:id", async (request, response) => {
         return response.status(500).send();
     }
 })
+/* ============================
+Criar conhecimento (POST)
+============================ */
+app.post("/offers", async (req, res) => {
+  const { title, description, category, level, userId } = req.body;
 
-app.listen(8080, () => {
-    console.log("Running on port 8080")
-})
+  try {
+    const oferta = await prisma.offer.create({
+      data: { title, description, category, level, userId }
+    });
+
+    return res.status(201).json({
+      message: "Oferta cadastrada com sucesso.",
+      data: oferta
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao cadastrar oferta." });
+  }
+});
+
+
+/* ============================
+Atualizar conhecimento (PUT)
+============================ */
+app.put("/offers/:id", async (req, res) => {
+  const { id } = req.params;
+  const { title, description, category, level, userId } = req.body;
+
+  try {
+    const oferta = await prisma.offer.findUnique({
+      where: { id }
+    });
+
+    if (!oferta) {
+      return res.status(404).json({ message: "Oferta não encontrada." });
+    }
+
+    const ofertaAtualizada = await prisma.offer.update({
+      where: { id },
+      data: { title, description, category, level, userId }
+    });
+
+    return res.status(200).json(ofertaAtualizada);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao atualizar oferta." });
+  }
+});
+
+
+/* ============================
+Deletar conhecimento (DELETE)
+============================ */
+app.delete("/offers/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const oferta = await prisma.offer.findUnique({
+      where: { id }
+    });
+
+    if (!oferta) {
+      return res.status(404).json({ message: "Oferta não encontrada." });
+    }
+
+    await prisma.offer.delete({
+      where: { id }
+    });
+
+    return res.status(204).send();
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao remover oferta." });
+  }
+});
+
+
+/* ============================
+Listar conhecimentos com filtros (GET)
+============================ */
+app.get("/offers", async (req, res) => {
+  const { categoria, nivel, busca } = req.query;
+
+  try {
+    const conhecimentos = await prisma.offer.findMany({
+      where: {
+        category: categoria ? String(categoria) : undefined,
+        level: nivel ? String(nivel) : undefined,
+        OR: busca ? [
+          { title: { contains: String(busca), mode: "insensitive" } },
+          { description: { contains: String(busca), mode: "insensitive" } }
+        ] : undefined
+      },
+      include: {
+        user: true
+      }
+    });
+
+    return res.status(200).json(conhecimentos);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro ao filtrar conhecimentos." });
+  }
+});
+
+
+app.listen(3000, () => {
+  console.log("Servidor rodando na porta 3000");
+});
